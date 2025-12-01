@@ -19,18 +19,27 @@ export default function CreateSupplier() {
         e.preventDefault();
         setLoading(true);
 
-        const res = await fetch('/api/suppliers', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form)
+        try {
+            const res = await fetch('/api/suppliers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form)
             });
             
-        const data = await res.json();
-        
-        if(res.ok) {
-            setLoading(false) 
-        } else {
-            alert('Erro: ' + data.message);
+            const data = await res.json();
+            
+            if(res.ok) {
+                alert('Fornecedor cadastrado com sucesso!');
+                // Redireciona para a lista de fornecedores
+                router.push('/dashboard/suppliers'); 
+            } else {
+                alert('Erro: ' + (data.message || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro de conexão.');
+        } finally {
+            setLoading(false);
         }
     }
 

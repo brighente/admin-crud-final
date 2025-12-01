@@ -4,19 +4,38 @@ import Supplier from '@/models/supplier';
 
 export async function GET(req, { params }) {
   await connectDB();
-  const supplier = await Supplier.findById(params.id);
-  return NextResponse.json(supplier);
+  const { id } = await params; // Correção do await
+  
+  try {
+    const supplier = await Supplier.findById(id);
+    if (!supplier) return NextResponse.json({ error: 'Não encontrado' }, { status: 404 });
+    return NextResponse.json(supplier);
+  } catch (error) {
+    return NextResponse.json({ error: 'ID Inválido' }, { status: 400 });
+  }
 }
 
 export async function PUT(req, { params }) {
   await connectDB();
-  const data = await req.json();
-  const updated = await Supplier.findByIdAndUpdate(params.id, data, { new: true });
-  return NextResponse.json(updated);
+  const { id } = await params; // Correção do await
+  
+  try {
+    const data = await req.json();
+    const updated = await Supplier.findByIdAndUpdate(id, data, { new: true });
+    return NextResponse.json(updated);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 }
 
 export async function DELETE(req, { params }) {
   await connectDB();
-  await Supplier.findByIdAndDelete(params.id);
-  return NextResponse.json({ message: 'Deletado' });
+  const { id } = await params; // Correção do await
+
+  try {
+    await Supplier.findByIdAndDelete(id);
+    return NextResponse.json({ message: 'Deletado com sucesso' });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 }
