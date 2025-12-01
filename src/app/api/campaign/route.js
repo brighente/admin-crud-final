@@ -4,13 +4,45 @@ import Campaign from '@/models/campaign';
 
 export async function GET() {
   await connectDB();
-  const campaigns = await Campaign.find({}).populate('supplier_id');
-  return NextResponse.json(campaigns);
+  try {
+    const campaigns = await Campaign.find({}).populate('supplier_id');
+    return NextResponse.json(campaigns);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(req) {
-  await connectDB();
-  const data = await req.json();
-  const newCampaign = await Campaign.create(data);
-  return NextResponse.json(newCampaign, { status: 201 });
+  try {
+    await connectDB();
+    const body = await req.json();
+    
+    // Tradução dos campos
+    const { descricao, meta, duracao, id_fornecedor } = body;
+
+    if (!descricao || !meta || !duracao || !id_fornecedor) {
+      return NextResponse.json(
+        { message: 'Preencha todos os campos obrigatórios.' }, 
+        { status: 400 }
+      );
+    }
+
+    const newCampaign = new Campaign({
+      name: descricao,
+      supplier_id: id_fornecedor,
+      sales_goal: parseFloat(meta),
+      duration_days: parseInt(duracao),
+      start_date: new Date()
+    });
+
+    await newCampaign.save();
+
+    return NextResponse.json({ 
+      message: 'Campanha criada com sucesso!', 
+      campaign: newCampaign 
+    }, { status: 201 });
+
+  } catch (error) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
 }

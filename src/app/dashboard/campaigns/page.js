@@ -1,18 +1,44 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaPlus, FaTrash, FaBullhorn } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+// Se der erro de ícone: npm install react-icons
+import { FaPlus, FaTrash, FaPen, FaBullhorn } from 'react-icons/fa';
 
 export default function CampaignsList() {
     const [campaigns, setCampaigns] = useState([]);
+    const router = useRouter();
 
     const fetchCampaigns = () => {
-        fetch('/api/campaigns').then(res => res.json()).then(data => setCampaigns(data)).catch(err => console.error(err));
+        fetch('/api/campaign') // Atenção: o nome do arquivo que criamos foi 'campaign', não 'campaigns'
+            .then(res => res.json())
+            .then(data => {
+                if(Array.isArray(data)) setCampaigns(data);
+                else setCampaigns([]);
+            })
+            .catch(err => console.error(err));
     };
 
     useEffect(() => { fetchCampaigns(); }, []);
 
     const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
+    const handleDelete = async (id) => {
+        if(!confirm("Deseja excluir esta campanha?")) return;
+        
+        // CORREÇÃO: URL dinâmica /id
+        // ATENÇÃO: Verifique se sua pasta api se chama 'campaign' ou 'campaigns'.
+        // Baseado nos passos anteriores, criamos 'src/app/api/campaign/route.js' (singular).
+        // Se a pasta do ID for 'src/app/api/campaign/[id]', a url é esta:
+        const res = await fetch(`/api/campaign/${id}`, { method: 'DELETE' });
+        
+        if(res.ok) fetchCampaigns();
+        else alert("Erro ao excluir");
+    };
+
+    const handleEdit = (id) => {
+        router.push(`/dashboard/campaigns/${id}`);
+    }
 
     return (
         <div className="container mx-auto">
@@ -42,25 +68,35 @@ export default function CampaignsList() {
                         {campaigns.length === 0 ? (
                             <tr><td colSpan="6" className="text-center py-6">Nenhuma campanha ativa.</td></tr>
                         ) : campaigns.map((camp) => (
-                        <tr key={camp.id} className="border-b hover:bg-gray-50">
-                            <td className="py-3 px-6 font-medium flex items-center gap-2">
+                        <tr key={camp._id} className="border-b hover:bg-gray-50">
+                            <td className="py-3 px-6 font-medium flex items-center gap-2 text-gray-700">
                                 <FaBullhorn className="text-orange-500"/>
-                                {camp.descricao_campanha}
+                                {/* CORREÇÃO: Campos em inglês */}
+                                {camp.name}
                             </td>
-                            <td className="py-3 px-6">{camp.nome_fornecedor}</td>
-                            <td className="py-3 px-6 text-center font-bold">
-                                {formatCurrency(camp.valor_meta)}
+                            <td className="py-3 px-6">
+                                {camp.supplier_id?.supplier_name || <span className="text-red-400">--</span>}
+                            </td>
+                            <td className="py-3 px-6 text-center font-bold text-green-700">
+                                {formatCurrency(camp.sales_goal)}
                             </td>
                             <td className="py-3 px-6 text-center">
-                                {camp.tempo_duracao_campanha} dias
+                                {camp.duration_days} dias
                             </td>
                             <td className="py-3 px-6 text-center">
-                                <span className="bg-green-100 text-green-700 py-1 px-3 rounded-full text-xs font-bold">
-                                    Em Andamento
+                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                    camp.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                    {camp.status === 'Active' ? 'Em Andamento' : 'Encerrada'}
                                 </span>
                             </td>
-                            <td className="py-3 px-6 text-center">
-                            <button className="text-red-500 hover:text-red-700 transition"><FaTrash /></button>
+                            <td className="py-3 px-6 text-center flex justify-center gap-3">
+                                <button onClick={() => handleEdit(camp._id)} className="text-blue-500 hover:text-blue-700 transition">
+                                    <FaPen />
+                                </button>
+                                <button onClick={() => handleDelete(camp._id)} className="text-red-500 hover:text-red-700 transition">
+                                    <FaTrash />
+                                </button>
                             </td>
                         </tr>
                         ))}
