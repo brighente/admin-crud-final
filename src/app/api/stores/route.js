@@ -4,13 +4,69 @@ import Store from '@/models/store';
 
 export async function GET() {
   await connectDB();
-  const stores = await Store.find({});
-  return NextResponse.json(stores);
+  try {
+    const stores = await Store.find({});
+    return NextResponse.json(stores);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(req) {
-  await connectDB();
-  const data = await req.json();
-  const newStore = await Store.create(data);
-  return NextResponse.json(newStore, { status: 201 });
+  try {
+    await connectDB();
+
+    // 1. Recebe dados em português do Front
+    const body = await req.json();
+    const { 
+      nome_fantasia, razao_social, cnpj, email, telefone,
+      logradouro, numero, bairro, cidade, estado, cep 
+    } = body;
+
+    // Validação Básica
+    if (!nome_fantasia || !cnpj || !email) {
+      return NextResponse.json(
+        { message: 'Campos obrigatórios: Nome Fantasia, CNPJ e E-mail.' }, 
+        { status: 400 }
+      );
+    }
+
+    // 2. Verifica duplicidade
+    const storeExists = await Store.findOne({ cnpj: cnpj });
+    if (storeExists) {
+      return NextResponse.json(
+        { message: 'Já existe uma loja com este CNPJ.' }, 
+        { status: 409 }
+      );
+    }
+
+    // 3. Cria o objeto estruturado
+    const newStore = new Store({
+      store_name: nome_fantasia,
+      corporate_reason: razao_social,
+      cnpj: cnpj,
+      contact_email: email,
+      phone_number: telefone,
+      address: {
+        street: logradouro,
+        number: numero,
+        district: bairro,
+        city: cidade,
+        state: estado,
+        zip_code: cep
+      },
+      status: 'on'
+    });
+
+    await newStore.save();
+
+    return NextResponse.json({ 
+      message: 'Loja criada com sucesso!', 
+      store: newStore 
+    }, { status: 201 });
+
+  } catch (error) {
+    console.error("Erro criar loja:", error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
 }

@@ -1,12 +1,24 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function StoresList() {
     const [stores, setStores] = useState([]);
+    const router = useRouter();
 
     const fetchStores = () => {
-        fetch('/api/stores').then(res => res.json()).then(data => setStores(data));
+        fetch('/api/stores')
+            .then(res => res.json())
+            .then(data => {
+                if(Array.isArray(data)) {
+                    setStores(data);
+                } else {
+                    console.error("Erro dados:", data);
+                    setStores([]);
+                }
+            })
+            .catch(err => console.error(err));
     }
 
     useEffect(() => { 
@@ -16,7 +28,8 @@ export default function StoresList() {
     const handleDelete = async (id) => {
         if(!confirm('Tem certeza que deseja excluir esta loja?')) return;
         
-        const res = await fetch(`/api/stores?id=${id}`, { 
+        // CORREÇÃO: URL dinâmica /id
+        const res = await fetch(`/api/stores/${id}`, { 
             method: 'DELETE' 
         });
 
@@ -25,6 +38,10 @@ export default function StoresList() {
         } else {
             alert('Erro ao excluir loja.');
         }
+    }
+
+    const handleEdit = (id) => {
+        router.push(`/dashboard/stores/${id}`);
     }
 
     return (
@@ -50,15 +67,34 @@ export default function StoresList() {
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
                         {stores.map((store) => (
-                        <tr key={store.id} className="border-b border-gray-200 hover:bg-gray-50">
-                            <td className="py-3 px-6 font-bold">{store.id}</td>
+                        <tr key={store._id} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="py-3 px-6 text-xs text-gray-400">
+                                ...{store._id.slice(-6)}
+                            </td>
                             <td className="py-3 px-6">
-                                <div className="font-bold text-gray-700">{store.nome_fantasia}</div>
-                                <div className="text-xs text-gray-400">{store.razao_social}</div>
+                                <div className="font-bold text-gray-700">{store.store_name}</div>
+                                <div className="text-xs text-gray-400">{store.corporate_reason}</div>
+                                {/* Mostra cidade/UF se existir o endereço */}
+                                {store.address && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        {store.address.city}/{store.address.state}
+                                    </div>
+                                )}
                             </td>
                             <td className="py-3 px-6">{store.cnpj}</td>
-                            <td className="py-3 px-6 text-center">
-                                <button onClick={() => handleDelete(store.id)} className="text-red-500 hover:text-red-700 font-bold">🗑️ Excluir</button>
+                            <td className="py-3 px-6">
+                                <div>{store.contact_email}</div>
+                                <div className="text-xs text-gray-500">{store.phone_number}</div>
+                            </td>
+                            <td className="py-3 px-6 text-center flex justify-center gap-3">
+                                <button 
+                                    onClick={() => handleEdit(store._id)} 
+                                    className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110"
+                                > ✏️ </button>
+                                <button 
+                                    onClick={() => handleDelete(store._id)} 
+                                    className="text-red-500 hover:text-red-700 transition transform hover:scale-110"
+                                > 🗑️ </button>
                             </td>
                         </tr>
                         ))}

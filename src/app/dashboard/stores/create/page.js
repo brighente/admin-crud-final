@@ -31,7 +31,15 @@ export default function CreateStore() {
 
             const data = await res.json();
 
+            if (res.ok) {
+                alert('Loja cadastrada com sucesso!');
+                router.push('/dashboard/stores'); // Redireciona para a lista
+            } else {
+                alert(`Erro: ${data.message}`);
+            }
+
         } catch(err) {
+            console.error(err);
             alert('Erro de conexão ao criar loja.');
         } finally {
             setLoading(false);
@@ -67,23 +75,23 @@ export default function CreateStore() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">CEP</label>
-                        <input name="cep" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" />
+                        <input name="cep" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" required />
                     </div>
                     <div className="md:col-span-2">
                         <label className="block text-gray-700 text-sm mb-1">Logradouro</label>
-                        <input name="logradouro" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" />
+                        <input name="logradouro" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" required />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Número</label>
-                        <input name="numero" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" />
+                        <input name="numero" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" required/>
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Bairro</label>
-                        <input name="bairro" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" />
+                        <input name="bairro" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none"  required/>
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Cidade</label>
-                        <input name="cidade" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" />
+                        <input name="cidade" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" required />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Estado</label>
