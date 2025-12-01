@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/db';
 import Product from '@/models/product';
+import Order from '@/models/order';
 
 export async function GET(req, { params }) {
   await connectDB();
@@ -36,6 +37,21 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   await connectDB();
   const { id } = await params;
-  await Product.findByIdAndDelete(id);
-  return NextResponse.json({ message: 'Deletado' });
+  
+  try {
+    const ordersWithProduct = await Order.countDocuments({ "items.product_id": id });
+
+    if (ordersWithProduct > 0) {
+        return NextResponse.json(
+          { message: `Este produto faz parte de ${ordersWithProduct} pedidos realizados. Impossível excluir.` }, 
+          { status: 409 }
+        );
+    }
+
+    await Product.findByIdAndDelete(id);
+    return NextResponse.json({ message: 'Deletado com sucesso' });
+
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/db';
 import Store from '@/models/store';
+import Order from '@/models/order';
 
 export async function GET(req, { params }) {
   await connectDB();
@@ -43,6 +44,21 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   await connectDB();
   const { id } = await params;
-  await Store.findByIdAndDelete(id);
-  return NextResponse.json({ message: 'Deletado' });
+
+  try {
+    const ordersCount = await Order.countDocuments({ store_id: id });
+    
+    if (ordersCount > 0) {
+      return NextResponse.json(
+        { message: `Esta loja possui ${ordersCount} pedidos registrados. Não é possível excluir.` }, 
+        { status: 409 }
+      );
+    }
+
+    await Store.findByIdAndDelete(id);
+    return NextResponse.json({ message: 'Loja deletada com sucesso.' });
+
+  } catch (error) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
 }

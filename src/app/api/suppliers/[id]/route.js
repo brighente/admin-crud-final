@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/db';
 import Supplier from '@/models/supplier';
+import Product from '@/models/product';
+import Campaign from '@/models/campaign';
 
 export async function GET(req, { params }) {
   await connectDB();
@@ -35,6 +37,28 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   await connectDB();
   const { id } = await params;
-  await Supplier.findByIdAndDelete(id);
-  return NextResponse.json({ message: 'Deletado' });
+
+  try {
+    const productsCount = await Product.countDocuments({ supplier_id: id });
+    if (productsCount > 0) {
+      return NextResponse.json(
+        { message: `Não é possível deletar! Existem ${productsCount} produtos vinculados a este fornecedor.` }, 
+        { status: 409 }
+      );
+    }
+
+    const campaignsCount = await Campaign.countDocuments({ supplier_id: id });
+    if (campaignsCount > 0) {
+        return NextResponse.json(
+          { message: `Não é possível deletar! Existem campanhas ativas para este fornecedor.` }, 
+          { status: 409 }
+        );
+      }
+
+    await Supplier.findByIdAndDelete(id);
+    return NextResponse.json({ message: 'Fornecedor deletado com sucesso.' });
+
+  } catch (error) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
 }
