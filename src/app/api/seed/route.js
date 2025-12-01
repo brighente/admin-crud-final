@@ -23,9 +23,9 @@ export async function GET() {
     const newUser = new User({
       name: 'Administrador',
       contact_email: 'admin@sistema.com',
-      user: 'admin',          // Campo de login
-      pwd: hashedPassword,    // Senha criptografada
-      level: 'ADMIN',         // Enum correto
+      user: 'admin',          
+      pwd: hashedPassword,    
+      level: 'ADMIN',         
       status: 'on'
     });
 
