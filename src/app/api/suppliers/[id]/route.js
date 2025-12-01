@@ -4,24 +4,28 @@ import Supplier from '@/models/supplier';
 
 export async function GET(req, { params }) {
   await connectDB();
-  const { id } = await params; // Correção do await
-  
-  try {
-    const supplier = await Supplier.findById(id);
-    if (!supplier) return NextResponse.json({ error: 'Não encontrado' }, { status: 404 });
-    return NextResponse.json(supplier);
-  } catch (error) {
-    return NextResponse.json({ error: 'ID Inválido' }, { status: 400 });
-  }
+  const { id } = await params;
+  const supplier = await Supplier.findById(id);
+  return NextResponse.json(supplier);
 }
 
 export async function PUT(req, { params }) {
   await connectDB();
-  const { id } = await params; // Correção do await
+  const { id } = await params;
   
   try {
     const data = await req.json();
-    const updated = await Supplier.findByIdAndUpdate(id, data, { new: true });
+
+    // TRADUÇÃO
+    const updateData = {
+        supplier_name: data.nome_fantasia,
+        corporate_reason: data.razao_social,
+        cnpj: data.cnpj,
+        contact_email: data.email,
+        phone_number: data.telefone
+    };
+
+    const updated = await Supplier.findByIdAndUpdate(id, updateData, { new: true });
     return NextResponse.json(updated);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -30,12 +34,7 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   await connectDB();
-  const { id } = await params; // Correção do await
-
-  try {
-    await Supplier.findByIdAndDelete(id);
-    return NextResponse.json({ message: 'Deletado com sucesso' });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
+  const { id } = await params;
+  await Supplier.findByIdAndDelete(id);
+  return NextResponse.json({ message: 'Deletado' });
 }

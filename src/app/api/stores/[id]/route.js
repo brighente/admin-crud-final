@@ -4,24 +4,36 @@ import Store from '@/models/store';
 
 export async function GET(req, { params }) {
   await connectDB();
-  const { id } = await params; // Correção para Next.js 15
-  
-  try {
-    const store = await Store.findById(id);
-    if (!store) return NextResponse.json({ error: 'Loja não encontrada' }, { status: 404 });
-    return NextResponse.json(store);
-  } catch (error) {
-    return NextResponse.json({ error: 'ID Inválido' }, { status: 400 });
-  }
+  const { id } = await params;
+  const store = await Store.findById(id);
+  return NextResponse.json(store);
 }
 
 export async function PUT(req, { params }) {
   await connectDB();
-  const { id } = await params; // Correção para Next.js 15
+  const { id } = await params;
   
   try {
     const data = await req.json();
-    const updated = await Store.findByIdAndUpdate(id, data, { new: true });
+
+    // TRADUÇÃO E ESTRUTURAÇÃO DO ENDEREÇO
+    const updateData = {
+        store_name: data.nome_fantasia,
+        corporate_reason: data.razao_social,
+        cnpj: data.cnpj,
+        contact_email: data.email,
+        phone_number: data.telefone,
+        address: {
+            street: data.logradouro,
+            number: data.numero,
+            district: data.bairro,
+            city: data.cidade,
+            state: data.estado,
+            zip_code: data.cep
+        }
+    };
+
+    const updated = await Store.findByIdAndUpdate(id, updateData, { new: true });
     return NextResponse.json(updated);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -30,12 +42,7 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   await connectDB();
-  const { id } = await params; // Correção para Next.js 15
-
-  try {
-    await Store.findByIdAndDelete(id);
-    return NextResponse.json({ message: 'Deletado com sucesso' });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
+  const { id } = await params;
+  await Store.findByIdAndDelete(id);
+  return NextResponse.json({ message: 'Deletado' });
 }
