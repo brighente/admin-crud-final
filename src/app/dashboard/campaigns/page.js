@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-// Se der erro de ícone: npm install react-icons
 import { FaPlus, FaTrash, FaPen, FaBullhorn } from 'react-icons/fa';
 
 export default function CampaignsList() {
@@ -10,7 +9,7 @@ export default function CampaignsList() {
     const router = useRouter();
 
     const fetchCampaigns = () => {
-        fetch('/api/campaign') // Atenção: o nome do arquivo que criamos foi 'campaign', não 'campaigns'
+        fetch('/api/campaign')
             .then(res => res.json())
             .then(data => {
                 if(Array.isArray(data)) setCampaigns(data);
@@ -26,10 +25,6 @@ export default function CampaignsList() {
     const handleDelete = async (id) => {
         if(!confirm("Deseja excluir esta campanha?")) return;
         
-        // CORREÇÃO: URL dinâmica /id
-        // ATENÇÃO: Verifique se sua pasta api se chama 'campaign' ou 'campaigns'.
-        // Baseado nos passos anteriores, criamos 'src/app/api/campaign/route.js' (singular).
-        // Se a pasta do ID for 'src/app/api/campaign/[id]', a url é esta:
         const res = await fetch(`/api/campaign/${id}`, { method: 'DELETE' });
         
         if(res.ok) fetchCampaigns();
@@ -71,7 +66,6 @@ export default function CampaignsList() {
                         <tr key={camp._id} className="border-b hover:bg-gray-50">
                             <td className="py-3 px-6 font-medium flex items-center gap-2 text-gray-700">
                                 <FaBullhorn className="text-orange-500"/>
-                                {/* CORREÇÃO: Campos em inglês */}
                                 {camp.name}
                             </td>
                             <td className="py-3 px-6">
@@ -91,12 +85,17 @@ export default function CampaignsList() {
                                 </span>
                             </td>
                             <td className="py-3 px-6 text-center flex justify-center gap-3">
-                                <button onClick={() => handleEdit(camp._id)} className="text-blue-500 hover:text-blue-700 transition">
-                                    <FaPen />
-                                </button>
-                                <button onClick={() => handleDelete(camp._id)} className="text-red-500 hover:text-red-700 transition">
-                                    <FaTrash />
-                                </button>
+                                <div className="flex items-center justify-center gap-4">
+                                    <button 
+                                        onClick={() => handleEdit(camp._id)} 
+                                        className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110 p-1"
+                                        title="Editar"> <FaPen size={18} /> </button>
+
+                                    <button 
+                                        onClick={() => handleDelete(camp._id)} 
+                                        className="text-red-500 hover:text-red-700 transition transform hover:scale-110 p-1"
+                                        title="Excluir"> <FaTrash size={18} /> </button>
+                                </div>
                             </td>
                         </tr>
                         ))}

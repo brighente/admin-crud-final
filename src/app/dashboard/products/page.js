@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-// Se der erro de 'Module not found' nos ícones, instale: npm install react-icons
 import { FaPlus, FaTrash, FaPen, FaBox } from 'react-icons/fa';
 
 export default function ProductsList() {
@@ -78,7 +77,6 @@ export default function ProductsList() {
                         ) : products.map((prod) => (
                         <tr key={prod._id} className="border-b hover:bg-gray-50">
                             <td className="py-3 px-6">
-                                {/* Lógica: Se tiver imagem, mostra. Se não, mostra ícone */}
                                 {prod.image ? (
                                     <img src={prod.image} alt={prod.name} className="h-10 w-10 object-cover rounded border" />
                                 ) : (
@@ -94,7 +92,6 @@ export default function ProductsList() {
                                 </span>
                             </td>
                             <td className="py-3 px-6 text-xs">
-                                {/* Acessa o objeto populado do fornecedor */}
                                 {prod.supplier_id?.supplier_name || <span className="text-red-400">Sem Fornecedor</span>}
                             </td>
                             <td className="py-3 px-6 text-center font-bold text-green-700">
@@ -104,12 +101,17 @@ export default function ProductsList() {
                                 {prod.stock_quantity}
                             </td>
                             <td className="py-3 px-6 text-center flex justify-center gap-3">
-                                <button onClick={() => handleEdit(prod._id)} className="text-blue-500 hover:text-blue-700 transition">
-                                    <FaPen />
-                                </button>
-                                <button onClick={() => handleDelete(prod._id)} className="text-red-500 hover:text-red-700 transition">
-                                    <FaTrash />
-                                </button>
+                                <div className="flex items-center justify-center gap-4">
+                                    <button 
+                                        onClick={() => handleEdit(prod._id)} 
+                                        className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110 p-1"
+                                        title="Editar"> <FaPen size={18} /> </button>
+
+                                    <button 
+                                        onClick={() => handleDelete(prod._id)} 
+                                        className="text-red-500 hover:text-red-700 transition transform hover:scale-110 p-1"
+                                        title="Excluir"> <FaTrash size={18} /> </button>
+                                </div>
                             </td>
                         </tr>
                         ))}

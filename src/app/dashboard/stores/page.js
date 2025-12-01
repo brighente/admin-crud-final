@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { FaPen, FaTrash } from 'react-icons/fa';
 
 export default function StoresList() {
     const [stores, setStores] = useState([]);
@@ -87,14 +88,17 @@ export default function StoresList() {
                                 <div className="text-xs text-gray-500">{store.phone_number}</div>
                             </td>
                             <td className="py-3 px-6 text-center flex justify-center gap-3">
-                                <button 
-                                    onClick={() => handleEdit(store._id)} 
-                                    className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110"
-                                > ✏️ </button>
-                                <button 
-                                    onClick={() => handleDelete(store._id)} 
-                                    className="text-red-500 hover:text-red-700 transition transform hover:scale-110"
-                                > 🗑️ </button>
+                                <div className="flex items-center justify-center gap-4">
+                                    <button 
+                                        onClick={() => handleEdit(store._id)} 
+                                        className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110 p-1"
+                                        title="Editar"> <FaPen size={18} /> </button>
+
+                                    <button 
+                                        onClick={() => handleDelete(store._id)} 
+                                        className="text-red-500 hover:text-red-700 transition transform hover:scale-110 p-1"
+                                        title="Excluir"> <FaTrash size={18} /> </button>
+                                </div>
                             </td>
                         </tr>
                         ))}

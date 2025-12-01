@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-// Se der erro de ícone: npm install react-icons
 import { FaPlus, FaEye, FaTrash } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
@@ -55,7 +54,6 @@ export default function OrdersList() {
     const handleDelete = async (id) => {
         if(!confirm("Tem certeza que deseja excluir/cancelar este pedido?")) return;
         
-        // CORREÇÃO: URL dinâmica /id
         const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
         
         if (res.ok) {
@@ -114,18 +112,17 @@ export default function OrdersList() {
                                 {getStatusBadge(order.status)}
                             </td>
                             <td className="py-3 px-6 text-center flex justify-center gap-3">
-                                <button 
-                                    onClick={() => handleView(order._id)} 
-                                    className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110" 
-                                    title="Ver Detalhes">
-                                    <FaEye />
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(order._id)} 
-                                    className="text-red-500 hover:text-red-700 transition transform hover:scale-110" 
-                                    title="Excluir">
-                                    <FaTrash />
-                                </button>
+                                <div className="flex items-center justify-center gap-4">
+                                    <button 
+                                        onClick={() => handleEdit(order._id)} 
+                                        className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110 p-1"
+                                        title="Editar"> <FaEye size={18} /> </button>
+
+                                    <button 
+                                        onClick={() => handleDelete(order._id)} 
+                                        className="text-red-500 hover:text-red-700 transition transform hover:scale-110 p-1"
+                                        title="Excluir"> <FaTrash size={18} /> </button>
+                                </div>
                             </td>
                         </tr>
                         ))}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { FaPen, FaTrash } from 'react-icons/fa';
 
 export default function UsersList() {
     const [users, setUsers] = useState([]);
@@ -97,23 +98,17 @@ export default function UsersList() {
                         </td>
                         
                         <td className="py-3 px-6 text-center flex justify-center gap-3">
-                            {/* Botão de Editar */}
-                            <button 
-                                onClick={() => handleEdit(user._id)} 
-                                className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110"
-                                title="Editar"
-                            >
-                                ✏️
-                            </button>
-                            
-                            {/* Botão de Deletar */}
-                            <button 
-                                onClick={() => handleDelete(user._id)} 
-                                className="text-red-500 hover:text-red-700 transition transform hover:scale-110"
-                                title="Deletar"
-                            >
-                                🗑️
-                            </button>
+                            <div className="flex items-center justify-center gap-4">
+                                <button 
+                                    onClick={() => handleEdit(user._id)} 
+                                    className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110 p-1"
+                                    title="Editar"> <FaPen size={18} /> </button>
+
+                                <button 
+                                    onClick={() => handleDelete(user._id)} 
+                                    className="text-red-500 hover:text-red-700 transition transform hover:scale-110 p-1"
+                                    title="Excluir"> <FaTrash size={18} /> </button>
+                            </div>
                         </td>
                     </tr>
                     ))}
