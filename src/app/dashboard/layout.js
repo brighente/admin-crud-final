@@ -1,5 +1,5 @@
 'use client';
-import Sidebar from '@/components/Sidebar'; // Importando o componente novo
+import Sidebar from '@/components/Sidebar';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

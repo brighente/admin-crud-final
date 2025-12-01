@@ -1,6 +1,5 @@
 import Link from 'next/link';
 
-// Componente auxiliar para o botão verde grandão
 const MenuButton = ({ label, href }) => (
     <Link 
         href={href} 

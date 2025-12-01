@@ -4,14 +4,13 @@ import { useRouter } from 'next/navigation';
 
 export default function CreateProduct() {
     const router = useRouter();
-    const [suppliers, setSuppliers] = useState([]); // Lista para o Select
+    const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({ 
         nome: '', valor: '', estoque: '', categoria: '', id_fornecedor: '', foto: '' 
     });
 
-    // 1. Busca os fornecedores ao carregar a página
     useEffect(() => {
         fetch('/api/suppliers')
             .then(res => res.json())
@@ -29,10 +28,9 @@ export default function CreateProduct() {
         e.preventDefault();
         setLoading(true);
 
-        // Ajuste: O select salva no state como 'id_fornecedor', mas a API espera 'fornecedor'
         const payload = {
             ...form,
-            fornecedor: form.id_fornecedor // Renomeando para bater com a API
+            fornecedor: form.id_fornecedor
         };
 
         try {

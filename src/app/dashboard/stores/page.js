@@ -75,7 +75,6 @@ export default function StoresList() {
                             <td className="py-3 px-6">
                                 <div className="font-bold text-gray-700">{store.store_name}</div>
                                 <div className="text-xs text-gray-400">{store.corporate_reason}</div>
-                                {/* Mostra cidade/UF se existir o endereço */}
                                 {store.address && (
                                     <div className="text-xs text-gray-500 mt-1">
                                         {store.address.city}/{store.address.state}

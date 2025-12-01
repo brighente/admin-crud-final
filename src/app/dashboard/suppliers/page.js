@@ -74,7 +74,6 @@ export default function SuppliersList() {
                             ...{sup._id.slice(-6)} 
                         </td>
                         <td className="py-3 px-6">
-                            {/* Campos corrigidos conforme o Model em inglês */}
                             <div className="font-bold text-gray-700"> {sup.supplier_name} </div>
                             <div className="text-xs text-gray-400"> {sup.corporate_reason} </div>
                         </td>

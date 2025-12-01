@@ -9,7 +9,6 @@ export default function UsersList() {
     const [users, setUsers] = useState([]);
     const router = useRouter();
 
-    // Busca os usuários
     const fetchUsers = () => {
         fetch('/api/users')
             .then(res => res.json())
@@ -27,13 +26,10 @@ export default function UsersList() {
         fetchUsers();
     }, []);
 
-    // --- FUNÇÃO DE DELETAR CORRIGIDA ---
     const handleDelete = async (id) => {
         if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
 
         try {
-            // AQUI ESTAVA O ERRO: Mudamos de '?id=' para '/id'
-            // Isso chama o arquivo src/app/api/users/[id]/route.js
             const res = await fetch(`/api/users/${id}`, { 
                 method: 'DELETE' 
             });
@@ -51,10 +47,7 @@ export default function UsersList() {
         }
     }
 
-    // --- FUNÇÃO DE EDITAR ---
     const handleEdit = (id) => {
-        // Redireciona para a página de edição desse ID
-        // Você precisará criar a página: src/app/dashboard/users/[id]/page.js
         router.push(`/dashboard/users/${id}`);
     }
 

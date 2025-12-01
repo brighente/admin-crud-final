@@ -151,7 +151,6 @@ export default function CreateOrder() {
                                 onChange={e => setSelectedLoja(e.target.value)}
                             >
                                 <option value="">Selecione...</option>
-                                {/* CORREÇÃO: Usando _id e store_name */}
                                 {lojas.map(l => (
                                     <option key={l._id} value={l._id}>{l.store_name}</option>
                                 ))}
@@ -170,7 +169,6 @@ export default function CreateOrder() {
                                 onChange={e => setCurrentItem({...currentItem, id_produto: e.target.value})}
                             >
                                 <option value="">Selecione o produto...</option>
-                                {/* CORREÇÃO: Usando _id, name e price */}
                                 {produtos.map(p => (
                                     <option key={p._id} value={p._id}>{p.name} - R$ {p.price}</option>
                                 ))}
