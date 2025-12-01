@@ -4,25 +4,35 @@ import { useRouter } from 'next/navigation';
 
 export default function CreateUser() {
     const router = useRouter();
-    const [form, setForm] = useState({ nome: '', email: '', perfil: '' });
+    const [form, setForm] = useState({ nome: '', email: '', perfil: 'ADMIN' });
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        const res = await fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form)
-        });
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form)
+            });
 
-        if(res.ok) {
-            alert('Usuário criado!');
-            router.push('/dashboard/users');
-        } else {
-            alert('Erro ao criar');
+            const data = await res.json(); // Pega a resposta do servidor
+
+            if(res.ok) {
+                alert('Usuário criado com sucesso!');
+                router.push('/dashboard/users');
+            } else {
+                // AGORA VAMOS VER O MOTIVO REAL
+                alert(`Erro: ${data.message || data.error}`);
+                console.error("Erro detalhado:", data);
+            }
+        } catch (error) {
+            alert('Erro de conexão com o servidor');
+            console.error(error);
         }
+        
         setLoading(false);
     }
 

@@ -8,24 +8,57 @@ export default function UsersList() {
     const [users, setUsers] = useState([]);
     const router = useRouter();
 
+    // Busca os usuários
     const fetchUsers = () => {
-        fetch('/api/users').then(res => res.json()).then(data => setUsers(data));
+        fetch('/api/users')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setUsers(data);
+                } else {
+                    console.error("Erro no formato dos dados:", data);
+                }
+            })
+            .catch(err => console.error("Erro na requisição:", err));
     }
 
     useEffect(() => {
         fetchUsers();
     }, []);
 
+    // --- FUNÇÃO DE DELETAR CORRIGIDA ---
     const handleDelete = async (id) => {
-        if (!confirm('Tem certeza que deseja excluir?')) return;
+        if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
 
-        await fetch(`/api/users?id=${id}`, { method: 'DELETE' });
-        fetchUsers();
-  }
+        try {
+            // AQUI ESTAVA O ERRO: Mudamos de '?id=' para '/id'
+            // Isso chama o arquivo src/app/api/users/[id]/route.js
+            const res = await fetch(`/api/users/${id}`, { 
+                method: 'DELETE' 
+            });
+
+            if (res.ok) {
+                alert('Usuário deletado com sucesso!');
+                fetchUsers(); // Recarrega a lista sem precisar dar F5
+            } else {
+                const errorData = await res.json();
+                alert(`Erro ao deletar: ${errorData.error || 'Erro desconhecido'}`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro de conexão ao tentar deletar.');
+        }
+    }
+
+    // --- FUNÇÃO DE EDITAR ---
+    const handleEdit = (id) => {
+        // Redireciona para a página de edição desse ID
+        // Você precisará criar a página: src/app/dashboard/users/[id]/page.js
+        router.push(`/dashboard/users/${id}`);
+    }
 
     return (
     <div className="container mx-auto">
-        {/* Header do Card */}
         <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-700">Usuários do Sistema</h1>
             <Link 
@@ -34,7 +67,6 @@ export default function UsersList() {
             > + Novo Usuário </Link>
         </div>
 
-        {/* Card da Tabela */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
             <table className="min-w-full leading-normal">
                 <thead>
@@ -48,25 +80,51 @@ export default function UsersList() {
                 </thead>
                 <tbody className="text-gray-600 text-sm font-light">
                     {users.map((user) => (
-                    <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50">
-                        <td className="py-3 px-6 text-left whitespace-nowrap font-medium">{user.id}</td>
-                        <td className="py-3 px-6 text-left">{user.nome || 'Sem nome'}</td>
-                        <td className="py-3 px-6 text-left">{user.email}</td>
+                    <tr key={user._id} className="border-b border-gray-200 hover:bg-gray-50">
+                        <td className="py-3 px-6 text-left whitespace-nowrap font-medium text-xs text-gray-400">
+                            ...{user._id.slice(-6)}
+                        </td>
+                        
+                        <td className="py-3 px-6 text-left font-bold text-gray-700">{user.name}</td>
+                        <td className="py-3 px-6 text-left">{user.contact_email}</td>
+                        
                         <td className="py-3 px-6 text-center">
                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                user.perfil === 'ADMIN' ? 'bg-purple-200 text-purple-700' :
-                                user.perfil === 'LOJA' ? 'bg-blue-200 text-blue-700' :
+                                user.level === 'ADMIN' ? 'bg-purple-200 text-purple-700' :
+                                user.level === 'LOJA' ? 'bg-blue-200 text-blue-700' :
                                 'bg-orange-200 text-orange-700'
-                            }`}> {user.perfil} </span>
+                            }`}> {user.level} </span>
                         </td>
+                        
                         <td className="py-3 px-6 text-center flex justify-center gap-3">
-                            <button className="text-blue-500 hover:text-blue-700">✏️</button>
-                            <button onClick={() => handleDelete(user.id)} className="text-red-500 hover:text-red-700">🗑️</button>
+                            {/* Botão de Editar */}
+                            <button 
+                                onClick={() => handleEdit(user._id)} 
+                                className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110"
+                                title="Editar"
+                            >
+                                ✏️
+                            </button>
+                            
+                            {/* Botão de Deletar */}
+                            <button 
+                                onClick={() => handleDelete(user._id)} 
+                                className="text-red-500 hover:text-red-700 transition transform hover:scale-110"
+                                title="Deletar"
+                            >
+                                🗑️
+                            </button>
                         </td>
                     </tr>
                     ))}
                 </tbody>
             </table>
+            
+            {users.length === 0 && (
+                <div className="p-8 text-center text-gray-500 bg-gray-50">
+                    Nenhum usuário encontrado.
+                </div>
+            )}
         </div>
     </div>
   );
