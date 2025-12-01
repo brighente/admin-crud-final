@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+// Se der erro de ícone, instale: npm install react-icons
 import { FaPlus, FaTrash, FaShoppingCart } from 'react-icons/fa';
 
 export default function CreateOrder() {
@@ -10,64 +11,80 @@ export default function CreateOrder() {
   const [lojas, setLojas] = useState([]);
   const [fornecedores, setFornecedores] = useState([]);
   const [produtos, setProdutos] = useState([]); // Produtos filtrados do fornecedor
+  const [allProducts, setAllProducts] = useState([]); // Todos os produtos (cache)
 
   // Estados do Formulário Principal
   const [selectedLoja, setSelectedLoja] = useState('');
   const [selectedFornecedor, setSelectedFornecedor] = useState('');
   
-  // Estados do "Carrinho" (Itens sendo adicionados)
+  // Estados do "Carrinho"
   const [itens, setItens] = useState([]);
   const [currentItem, setCurrentItem] = useState({ id_produto: '', quantidade: 1 });
   
   // Loading
   const [loading, setLoading] = useState(false);
 
-  // 1. Carregar Lojas e Fornecedores ao abrir a tela
+  // 1. Carregar Dados Iniciais
   useEffect(() => {
     const fetchData = async () => {
-        const resLojas = await fetch('/api/stores');
-        const dataLojas = await resLojas.json();
-        setLojas(dataLojas);
+        try {
+            const [resLojas, resForn, resProd] = await Promise.all([
+                fetch('/api/stores'),
+                fetch('/api/suppliers'),
+                fetch('/api/products')
+            ]);
 
-        const resForn = await fetch('/api/suppliers');
-        const dataForn = await resForn.json();
-        setFornecedores(dataForn);
+            const dataLojas = await resLojas.json();
+            const dataForn = await resForn.json();
+            const dataProd = await resProd.json();
+
+            setLojas(Array.isArray(dataLojas) ? dataLojas : []);
+            setFornecedores(Array.isArray(dataForn) ? dataForn : []);
+            setAllProducts(Array.isArray(dataProd) ? dataProd : []);
+        } catch (error) {
+            console.error("Erro ao carregar dados:", error);
+        }
     };
     fetchData();
   }, []);
 
-  // 2. Quando mudar o Fornecedor, buscar os produtos dele
+  // 2. Filtrar Produtos quando mudar Fornecedor
   useEffect(() => {
     if(!selectedFornecedor) {
         setProdutos([]);
         return;
     }
-    // Aqui você deve ter uma rota que filtra produtos por fornecedor
-    // Ex: /api/products?id_fornecedor=X
-    fetch(`/api/products?id_fornecedor=${selectedFornecedor}`)
-        .then(res => res.json())
-        .then(data => setProdutos(data))
-        .catch(() => setProdutos([]));
-        
-    setItens([]); // Limpa o carrinho se trocar de fornecedor para evitar erro
-  }, [selectedFornecedor]);
+    
+    // Filtra produtos deste fornecedor
+    const filtrados = allProducts.filter(p => {
+        const pFornId = p.supplier_id?._id || p.supplier_id;
+        return pFornId === selectedFornecedor;
+    });
 
-  // Adicionar Item na Lista
+    setProdutos(filtrados);
+    setItens([]); // Limpa o carrinho para não misturar fornecedores
+  }, [selectedFornecedor, allProducts]);
+
+  // Adicionar Item
   const handleAddItem = () => {
     if(!currentItem.id_produto || currentItem.quantidade <= 0) return alert("Selecione um produto e quantidade válida");
 
-    const produtoInfo = produtos.find(p => p.id == currentItem.id_produto);
+    // CORREÇÃO: Usando _id em vez de id
+    const produtoInfo = produtos.find(p => p._id === currentItem.id_produto);
     
+    if (!produtoInfo) return;
+
+    // CORREÇÃO: Usando nomes em inglês (name, price)
     const novoItem = {
         id_produto: currentItem.id_produto,
-        nome: produtoInfo.produto,
-        valor_unitario: parseFloat(produtoInfo.valor_produto),
+        nome: produtoInfo.name, 
+        valor_unitario: parseFloat(produtoInfo.price),
         quantidade: parseInt(currentItem.quantidade),
-        total: parseFloat(produtoInfo.valor_produto) * parseInt(currentItem.quantidade)
+        total: parseFloat(produtoInfo.price) * parseInt(currentItem.quantidade)
     };
 
     setItens([...itens, novoItem]);
-    setCurrentItem({ id_produto: '', quantidade: 1 }); // Limpa inputs
+    setCurrentItem({ id_produto: '', quantidade: 1 });
   };
 
   // Remover Item
@@ -77,10 +94,10 @@ export default function CreateOrder() {
     setItens(novaLista);
   };
 
-  // Calcular Total Geral
+  // Total Geral
   const totalGeral = itens.reduce((acc, item) => acc + item.total, 0);
 
-  // Salvar Pedido Final
+  // Salvar Pedido
   const handleSubmit = async () => {
     if(!selectedLoja || !selectedFornecedor || itens.length === 0) {
         return alert("Preencha todos os dados e adicione itens.");
@@ -105,12 +122,13 @@ export default function CreateOrder() {
             router.push('/dashboard/orders');
         } else {
             const data = await res.json();
-            alert("Erro: " + data.message);
+            alert("Erro: " + (data.message || 'Erro desconhecido'));
         }
     } catch(err){
         alert("Erro de conexão.");
+    } finally {
+        setLoading(false);
     }
-    setLoading(false);
   };
 
     return (
@@ -132,8 +150,9 @@ export default function CreateOrder() {
                                 onChange={e => setSelectedFornecedor(e.target.value)}
                             >
                                 <option value="">Selecione...</option>
+                                {/* CORREÇÃO: Usando _id e supplier_name */}
                                 {fornecedores.map(f => (
-                                    <option key={f.id} value={f.id}>{f.nome_fantasia}</option>
+                                    <option key={f._id} value={f._id}>{f.supplier_name}</option>
                                 ))}
                             </select>
                         </div>
@@ -146,8 +165,9 @@ export default function CreateOrder() {
                                 onChange={e => setSelectedLoja(e.target.value)}
                             >
                                 <option value="">Selecione...</option>
+                                {/* CORREÇÃO: Usando _id e store_name */}
                                 {lojas.map(l => (
-                                    <option key={l.id} value={l.id}>{l.nome_fantasia}</option>
+                                    <option key={l._id} value={l._id}>{l.store_name}</option>
                                 ))}
                             </select>
                         </div>
@@ -164,8 +184,9 @@ export default function CreateOrder() {
                                 onChange={e => setCurrentItem({...currentItem, id_produto: e.target.value})}
                             >
                                 <option value="">Selecione o produto...</option>
+                                {/* CORREÇÃO: Usando _id, name e price */}
                                 {produtos.map(p => (
-                                    <option key={p.id} value={p.id}>{p.produto} - R$ {p.valor_produto}</option>
+                                    <option key={p._id} value={p._id}>{p.name} - R$ {p.price}</option>
                                 ))}
                             </select>
                         </div>

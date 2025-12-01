@@ -1,16 +1,20 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+// Se der erro de ícone: npm install react-icons
 import { FaPlus, FaEye, FaTrash } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function OrdersList() {
     const [orders, setOrders] = useState([]);
+    const router = useRouter();
 
     const fetchOrders = async () => {
         try {
             const res = await fetch('/api/orders');
             const data = await res.json();
-            setOrders(data);
+            if (Array.isArray(data)) setOrders(data);
+            else setOrders([]);
         } catch (err) {
             console.error(err);
         }
@@ -20,27 +24,50 @@ export default function OrdersList() {
 
     const formatDate = (dateStr) => {
         if (!dateStr) return '-';
-        return new Date(dateStr).toLocaleDateString('pt-BR');
+        return new Date(dateStr).toLocaleDateString('pt-BR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
     };
 
     const formatCurrency = (val) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
     };
 
     const getStatusBadge = (status) => {
-        const styles = {
-            PENDENTE: 'bg-yellow-100 text-yellow-800',
-            SEPARADO: 'bg-blue-100 text-blue-800',
-            ENVIADO: 'bg-green-100 text-green-800',
-            CANCELADO: 'bg-red-100 text-red-800'
+        const map = {
+            'Pending':   { label: 'PENDENTE', class: 'bg-yellow-100 text-yellow-800' },
+            'Confirmed': { label: 'CONFIRMADO', class: 'bg-blue-100 text-blue-800' },
+            'Shipped':   { label: 'ENVIADO', class: 'bg-indigo-100 text-indigo-800' },
+            'Delivered': { label: 'ENTREGUE', class: 'bg-green-100 text-green-800' },
+            'Cancelled': { label: 'CANCELADO', class: 'bg-red-100 text-red-800' }
         };
 
+        const current = map[status] || { label: status, class: 'bg-gray-100 text-gray-600' };
+
         return (
-            <span className={`px-2 py-1 rounded-full text-xs font-bold ${styles[status] || 'bg-gray-100'}`}>
-                {status}
+            <span className={`px-2 py-1 rounded-full text-xs font-bold ${current.class}`}>
+                {current.label}
             </span>
         );
     };
+
+    const handleDelete = async (id) => {
+        if(!confirm("Tem certeza que deseja excluir/cancelar este pedido?")) return;
+        
+        // CORREÇÃO: URL dinâmica /id
+        const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+        
+        if (res.ok) {
+            fetchOrders();
+        } else {
+            alert("Erro ao excluir pedido.");
+        }
+    };
+
+    const handleView = (id) => {
+        router.push(`/dashboard/orders/${id}`);
+    }
 
     return (
         <div className="container mx-auto">
@@ -71,20 +98,34 @@ export default function OrdersList() {
                         {orders.length === 0 ? (
                             <tr><td colSpan="7" className="text-center py-6">Nenhum pedido encontrado.</td></tr>
                         ) : orders.map((order) => (
-                        <tr key={order.id} className="border-b hover:bg-gray-50">
-                            <td className="py-3 px-6 font-bold">#{order.id}</td>
-                            <td className="py-3 px-6">{formatDate(order.dt_inc)}</td>
-                            <td className="py-3 px-6">{order.loja_nome}</td>
-                            <td className="py-3 px-6">{order.fornecedor_nome}</td>
+                        <tr key={order._id} className="border-b hover:bg-gray-50">
+                            <td className="py-3 px-6 text-xs text-gray-400">...{order._id.slice(-6)}</td>
+                            <td className="py-3 px-6">{formatDate(order.createdAt)}</td>
+                            <td className="py-3 px-6 font-medium">
+                                {order.store_id?.store_name || <span className="text-red-400">Loja Excluída</span>}
+                            </td>
+                            <td className="py-3 px-6">
+                                {order.supplier_id?.supplier_name || <span className="text-red-400">--</span>}
+                            </td>
                             <td className="py-3 px-6 text-center font-bold text-gray-800">
-                                {formatCurrency(order.vl_total_pedido)}
+                                {formatCurrency(order.total_amount)}
                             </td>
                             <td className="py-3 px-6 text-center">
                                 {getStatusBadge(order.status)}
                             </td>
                             <td className="py-3 px-6 text-center flex justify-center gap-3">
-                            <button className="text-blue-500 hover:text-blue-700" title="Ver Detalhes"><FaEye /></button>
-                            <button className="text-red-500 hover:text-red-700" title="Cancelar"><FaTrash /></button>
+                                <button 
+                                    onClick={() => handleView(order._id)} 
+                                    className="text-blue-500 hover:text-blue-700 transition transform hover:scale-110" 
+                                    title="Ver Detalhes">
+                                    <FaEye />
+                                </button>
+                                <button 
+                                    onClick={() => handleDelete(order._id)} 
+                                    className="text-red-500 hover:text-red-700 transition transform hover:scale-110" 
+                                    title="Excluir">
+                                    <FaTrash />
+                                </button>
                             </td>
                         </tr>
                         ))}
