@@ -48,7 +48,7 @@ export default function StoresList() {
     return (
         <div className="container mx-auto">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-700">Lojas Parceiras</h1>
+                <h1 className="text-2xl font-bold text-gray-700">Lojas</h1>
                 <Link 
                 href="/dashboard/stores/create" 
                 className="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition flex items-center gap-2"

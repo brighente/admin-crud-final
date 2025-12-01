@@ -2,18 +2,21 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/db';
 import Order from '@/models/order';
 import Product from '@/models/product';
+import Store from '@/models/store';     
+import Supplier from '@/models/supplier'; 
 
 export async function GET() {
   await connectDB();
   try {
     const orders = await Order.find({})
-      .populate('store_id')
-      .populate('supplier_id')
-      .populate('items.product_id')
+      .populate('store_id')      // Preenche dados da loja
+      .populate('supplier_id')   // Preenche dados do fornecedor
+      .populate('items.product_id') // Preenche dados do produto
       .sort({ createdAt: -1 });
       
     return NextResponse.json(orders);
   } catch (error) {
+    console.error("Erro ao buscar pedidos:", error); 
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
