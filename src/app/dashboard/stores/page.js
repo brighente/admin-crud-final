@@ -28,7 +28,6 @@ export default function StoresList() {
     const handleDelete = async (id) => {
         if(!confirm('Tem certeza que deseja excluir esta loja?')) return;
         
-        // CORREÇÃO: URL dinâmica /id
         const res = await fetch(`/api/stores/${id}`, { 
             method: 'DELETE' 
         });
@@ -36,7 +35,8 @@ export default function StoresList() {
         if (res.ok) {
             fetchStores();
         } else {
-            alert('Erro ao excluir loja.');
+            const data = await res.json();
+            alert("Erro: " + (data.message || "Não foi possível excluir."));
         }
     }
 

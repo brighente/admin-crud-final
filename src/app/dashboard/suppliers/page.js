@@ -29,7 +29,6 @@ export default function SuppliersList() {
     const handleDelete = async (id) => {
         if (!confirm('Tem certeza que deseja excluir este fornecedor?')) return;
         
-        // CORREÇÃO: Usar barra '/' em vez de query param '?id='
         const res = await fetch(`/api/suppliers/${id}`, { 
             method: 'DELETE' 
         });
@@ -37,7 +36,8 @@ export default function SuppliersList() {
         if (res.ok) {
             fetchSuppliers();
         } else {
-            alert("Erro ao excluir.");
+            const data = await res.json();
+            alert("Erro: " + (data.message || "Não foi possível excluir."));
         }
     }
 

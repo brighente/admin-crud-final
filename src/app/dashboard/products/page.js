@@ -33,13 +33,13 @@ export default function ProductsList() {
     const handleDelete = async (id) => {
         if(!confirm("Deseja excluir este produto?")) return;
         
-        // CORREÇÃO: URL dinâmica /id
         const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
         
         if(res.ok) {
             fetchProducts();
         } else {
-            alert("Erro ao excluir");
+            const data = await res.json();
+            alert("Erro: " + (data.message || "Não foi possível excluir."));
         }
     };
 
