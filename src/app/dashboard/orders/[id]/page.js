@@ -21,7 +21,7 @@ export default function EditOrder() {
         const res = await fetch(`/api/orders/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status }) // Só mandamos o status
+            body: JSON.stringify({ status }) 
         });
 
         if(res.ok) {
@@ -39,7 +39,6 @@ export default function EditOrder() {
             <h1 className="text-2xl font-bold text-gray-700 mb-6">Detalhes do Pedido #{order._id.slice(-6)}</h1>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Coluna Esquerda: Itens */}
                 <div className="lg:col-span-2 bg-white rounded shadow p-6">
                     <h3 className="font-bold text-lg mb-4">Itens do Pedido</h3>
                     <table className="w-full text-sm">
@@ -61,7 +60,6 @@ export default function EditOrder() {
                     </div>
                 </div>
 
-                {/* Coluna Direita: Status e Info */}
                 <div className="bg-white rounded shadow p-6 h-fit">
                     <h3 className="font-bold text-lg mb-4">Gerenciar Pedido</h3>
                     
@@ -76,6 +74,7 @@ export default function EditOrder() {
                             value={status} 
                             onChange={e => setStatus(e.target.value)}
                             className="w-full border p-2 rounded bg-white"
+                            required
                         >
                             <option value="Pending">Pendente</option>
                             <option value="Confirmed">Confirmado</option>

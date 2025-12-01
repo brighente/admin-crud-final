@@ -33,7 +33,7 @@ export default function CreateStore() {
 
             if (res.ok) {
                 alert('Loja cadastrada com sucesso!');
-                router.push('/dashboard/stores'); // Redireciona para a lista
+                router.push('/dashboard/stores');
             } else {
                 alert(`Erro: ${data.message}`);
             }
@@ -83,7 +83,7 @@ export default function CreateStore() {
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Número</label>
-                        <input name="numero" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" required/>
+                        <input name="numero" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:border-green-500 outline-none" />
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Bairro</label>
@@ -95,7 +95,7 @@ export default function CreateStore() {
                     </div>
                     <div className="md:col-span-1">
                         <label className="block text-gray-700 text-sm mb-1">Estado</label>
-                        <select name="estado" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white focus:border-green-500 outline-none">
+                        <select name="estado" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white focus:border-green-500 outline-none" required>
                             {estados.map((uf) => (
                                 <option key={uf} value={uf}> {uf} </option>
                             ))}

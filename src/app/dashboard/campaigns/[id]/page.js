@@ -54,19 +54,19 @@ export default function EditCampaign() {
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <div className="col-span-2">
                             <label className="block text-sm mb-1">Descrição</label>
-                            <input name="descricao" value={form.descricao} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input name="descricao" value={form.descricao} onChange={handleChange} className="w-full border p-2 rounded" required/>
                         </div>
                         <div>
                             <label className="block text-sm mb-1">Meta (R$)</label>
-                            <input name="meta" type="number" value={form.meta} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input name="meta" type="number" value={form.meta} onChange={handleChange} className="w-full border p-2 rounded" required/>
                         </div>
                         <div>
                             <label className="block text-sm mb-1">Duração (Dias)</label>
-                            <input name="duracao" type="number" value={form.duracao} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input name="duracao" type="number" value={form.duracao} onChange={handleChange} className="w-full border p-2 rounded" required/>
                         </div>
                         <div>
                             <label className="block text-sm mb-1">Fornecedor</label>
-                            <select name="id_fornecedor" value={form.id_fornecedor} onChange={handleChange} className="w-full border p-2 rounded bg-white">
+                            <select name="id_fornecedor" value={form.id_fornecedor} onChange={handleChange} className="w-full border p-2 rounded bg-white" required>
                                 {suppliers.map(s => <option key={s._id} value={s._id}>{s.supplier_name}</option>)}
                             </select>
                         </div>

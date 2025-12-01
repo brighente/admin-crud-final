@@ -16,8 +16,8 @@ export default function EditSupplier() {
             .then(data => {
                 setForm({
                     cnpj: data.cnpj,
-                    nome_fantasia: data.supplier_name, // Mapeando
-                    razao_social: data.corporate_reason, // Mapeando
+                    nome_fantasia: data.supplier_name,
+                    razao_social: data.corporate_reason, 
                     email: data.contact_email,
                     telefone: data.phone_number
                 });
@@ -53,7 +53,7 @@ export default function EditSupplier() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">CNPJ</label>
-                            <input name="cnpj" value={form.cnpj} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" />
+                            <input name="cnpj" value={form.cnpj} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" required/>
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Telefone</label>
@@ -61,20 +61,20 @@ export default function EditSupplier() {
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">E-mail</label>
-                            <input name="email" value={form.email} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" />
+                            <input name="email" value={form.email} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" required/>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Nome Fantasia</label>
-                            <input name="nome_fantasia" value={form.nome_fantasia} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" />
+                            <input name="nome_fantasia" value={form.nome_fantasia} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" required/>
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Razão Social</label>
-                            <input name="razao_social" value={form.razao_social} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" />
+                            <input name="razao_social" value={form.razao_social} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none" required/>
                         </div>
                     </div>
-                    <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium">Atualizar</button>
+                    <button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded font-medium">Atualizar</button>
                 </form>
             </div>
         </div>

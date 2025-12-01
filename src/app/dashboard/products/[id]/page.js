@@ -13,7 +13,6 @@ export default function EditProduct() {
     });
 
     useEffect(() => {
-        // Carrega fornecedores e o produto atual
         Promise.all([
             fetch('/api/suppliers').then(res => res.json()),
             fetch(`/api/products/${id}`).then(res => res.json())
@@ -24,7 +23,6 @@ export default function EditProduct() {
                 valor: dataProduct.price,
                 estoque: dataProduct.stock_quantity,
                 categoria: dataProduct.category,
-                // Se o supplier_id vier populado (objeto), pega o _id. Se vier string, usa ela.
                 id_fornecedor: dataProduct.supplier_id?._id || dataProduct.supplier_id,
                 foto: dataProduct.image || ''
             });
@@ -34,7 +32,6 @@ export default function EditProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mapeia de volta para o que a API espera
         const payload = {
             nome: form.nome,
             valor: form.valor,
@@ -70,28 +67,32 @@ export default function EditProduct() {
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <div className="col-span-2">
                             <label className="block text-gray-700 text-sm mb-1">Nome</label>
-                            <input name="nome" value={form.nome} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input name="nome" value={form.nome} onChange={handleChange} className="w-full border p-2 rounded" required/>
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Valor</label>
-                            <input name="valor" type="number" step="0.01" value={form.valor} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input name="valor" type="number" step="0.01" value={form.valor} onChange={handleChange} className="w-full border p-2 rounded" required/>
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Estoque</label>
-                            <input name="estoque" type="number" value={form.estoque} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input name="estoque" type="number" value={form.estoque} onChange={handleChange} className="w-full border p-2 rounded" required/>
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Categoria</label>
-                            <select name="categoria" value={form.categoria} onChange={handleChange} className="w-full border p-2 rounded bg-white">
-                                <option value="Eletrônicos">Eletrônicos</option>
-                                <option value="Móveis">Móveis</option>
-                                <option value="Alimentos">Alimentos</option>
+                            <select name="categoria" value={form.categoria} onChange={handleChange} className="w-full border p-2 rounded bg-white" required >
+                                <option value="Eletrônicos">Material Básico</option>
+                                <option value="Móveis">Hidráulica</option>
+                                <option value="Alimentos">Elétrica</option>
+                                <option value="Roupas">Pisos e Revestimentos</option>
+                                <option value="Outros">Pintura</option>
+                                <option value="Outros">Ferramentas</option>
+                                <option value="Outros">Louças e Metais</option>
                                 <option value="Outros">Outros</option>
                             </select>
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Fornecedor</label>
-                            <select name="id_fornecedor" value={form.id_fornecedor} onChange={handleChange} className="w-full border p-2 rounded bg-white">
+                            <select name="id_fornecedor" value={form.id_fornecedor} onChange={handleChange} className="w-full border p-2 rounded bg-white" required>
                                 {suppliers.map(s => <option key={s._id} value={s._id}>{s.supplier_name}</option>)}
                             </select>
                         </div>

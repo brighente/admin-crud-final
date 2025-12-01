@@ -18,13 +18,12 @@ export default function CreateUser() {
                 body: JSON.stringify(form)
             });
 
-            const data = await res.json(); // Pega a resposta do servidor
+            const data = await res.json();
 
             if(res.ok) {
                 alert('Usuário criado com sucesso!');
                 router.push('/dashboard/users');
             } else {
-                // AGORA VAMOS VER O MOTIVO REAL
                 alert(`Erro: ${data.message || data.error}`);
                 console.error("Erro detalhado:", data);
             }

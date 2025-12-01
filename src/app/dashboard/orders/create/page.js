@@ -1,30 +1,24 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// Se der erro de ícone, instale: npm install react-icons
 import { FaPlus, FaTrash, FaShoppingCart } from 'react-icons/fa';
 
 export default function CreateOrder() {
   const router = useRouter();
   
-  // Listas para os Selects
   const [lojas, setLojas] = useState([]);
   const [fornecedores, setFornecedores] = useState([]);
-  const [produtos, setProdutos] = useState([]); // Produtos filtrados do fornecedor
-  const [allProducts, setAllProducts] = useState([]); // Todos os produtos (cache)
+  const [produtos, setProdutos] = useState([]); 
+  const [allProducts, setAllProducts] = useState([]); 
 
-  // Estados do Formulário Principal
   const [selectedLoja, setSelectedLoja] = useState('');
   const [selectedFornecedor, setSelectedFornecedor] = useState('');
   
-  // Estados do "Carrinho"
   const [itens, setItens] = useState([]);
   const [currentItem, setCurrentItem] = useState({ id_produto: '', quantidade: 1 });
   
-  // Loading
   const [loading, setLoading] = useState(false);
 
-  // 1. Carregar Dados Iniciais
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -48,33 +42,28 @@ export default function CreateOrder() {
     fetchData();
   }, []);
 
-  // 2. Filtrar Produtos quando mudar Fornecedor
   useEffect(() => {
     if(!selectedFornecedor) {
         setProdutos([]);
         return;
     }
     
-    // Filtra produtos deste fornecedor
     const filtrados = allProducts.filter(p => {
         const pFornId = p.supplier_id?._id || p.supplier_id;
         return pFornId === selectedFornecedor;
     });
 
     setProdutos(filtrados);
-    setItens([]); // Limpa o carrinho para não misturar fornecedores
+    setItens([]); 
   }, [selectedFornecedor, allProducts]);
 
-  // Adicionar Item
   const handleAddItem = () => {
     if(!currentItem.id_produto || currentItem.quantidade <= 0) return alert("Selecione um produto e quantidade válida");
 
-    // CORREÇÃO: Usando _id em vez de id
     const produtoInfo = produtos.find(p => p._id === currentItem.id_produto);
     
     if (!produtoInfo) return;
 
-    // CORREÇÃO: Usando nomes em inglês (name, price)
     const novoItem = {
         id_produto: currentItem.id_produto,
         nome: produtoInfo.name, 
@@ -87,17 +76,14 @@ export default function CreateOrder() {
     setCurrentItem({ id_produto: '', quantidade: 1 });
   };
 
-  // Remover Item
   const handleRemoveItem = (index) => {
     const novaLista = [...itens];
     novaLista.splice(index, 1);
     setItens(novaLista);
   };
 
-  // Total Geral
   const totalGeral = itens.reduce((acc, item) => acc + item.total, 0);
 
-  // Salvar Pedido
   const handleSubmit = async () => {
     if(!selectedLoja || !selectedFornecedor || itens.length === 0) {
         return alert("Preencha todos os dados e adicione itens.");
@@ -148,9 +134,9 @@ export default function CreateOrder() {
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white focus:border-green-500 outline-none"
                                 value={selectedFornecedor}
                                 onChange={e => setSelectedFornecedor(e.target.value)}
+                                required
                             >
                                 <option value="">Selecione...</option>
-                                {/* CORREÇÃO: Usando _id e supplier_name */}
                                 {fornecedores.map(f => (
                                     <option key={f._id} value={f._id}>{f.supplier_name}</option>
                                 ))}

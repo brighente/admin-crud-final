@@ -7,7 +7,6 @@ export default function CreateCampaign() {
     const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(false);
     
-    // Estado do formulário
     const [form, setForm] = useState({
         descricao: '',
         meta: '',
@@ -15,7 +14,6 @@ export default function CreateCampaign() {
         id_fornecedor: ''
     });
 
-    // Busca fornecedores ao carregar
     useEffect(() => {
         fetch('/api/suppliers')
             .then(res => res.json())

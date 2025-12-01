@@ -83,10 +83,13 @@ export default function CreateProduct() {
                 <div>
                     <label className="block text-gray-700 text-sm mb-1">Categoria</label>
                     <select name="categoria" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white focus:border-green-500 outline-none">
-                        <option value="Eletrônicos">Eletrônicos</option>
-                        <option value="Móveis">Móveis</option>
-                        <option value="Alimentos">Alimentos</option>
-                        <option value="Roupas">Roupas</option>
+                        <option value="Eletrônicos">Material Básico</option>
+                        <option value="Móveis">Hidráulica</option>
+                        <option value="Alimentos">Elétrica</option>
+                        <option value="Roupas">Pisos e Revestimentos</option>
+                        <option value="Outros">Pintura</option>
+                        <option value="Outros">Ferramentas</option>
+                        <option value="Outros">Louças e Metais</option>
                         <option value="Outros">Outros</option>
                     </select>
                 </div>

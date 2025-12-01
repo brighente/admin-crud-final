@@ -30,7 +30,6 @@ export default function CreateSupplier() {
             
             if(res.ok) {
                 alert('Fornecedor cadastrado com sucesso!');
-                // Redireciona para a lista de fornecedores
                 router.push('/dashboard/suppliers'); 
             } else {
                 alert('Erro: ' + (data.message || 'Erro desconhecido'));
@@ -72,7 +71,7 @@ export default function CreateSupplier() {
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm mb-1">Razão Social</label>
-                            <input name="razao_social" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500" />
+                            <input name="razao_social" onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500" required/>
                         </div>
                     </div>
 

@@ -9,11 +9,9 @@ export default function EditUser() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Busca os dados do usuário para preencher o form
         fetch(`/api/users/${id}`)
             .then(res => res.json())
             .then(data => {
-                // Traduz do Banco (Inglês) para o Form (Português)
                 setForm({
                     nome: data.name,
                     email: data.contact_email,
@@ -56,6 +54,7 @@ export default function EditUser() {
                                 value={form.nome}
                                 onChange={e => setForm({...form, nome: e.target.value})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none"
+                                required
                             />
                         </div>
                         <div>
@@ -65,6 +64,7 @@ export default function EditUser() {
                                 value={form.email}
                                 onChange={e => setForm({...form, email: e.target.value})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-sm outline-none"
+                                required
                             />
                         </div>
                         <div>
@@ -73,6 +73,7 @@ export default function EditUser() {
                                 value={form.perfil}
                                 onChange={e => setForm({...form, perfil: e.target.value})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white outline-none"
+                                required
                             >
                                 <option value="ADMIN">Administrador</option>
                                 <option value="LOJA">Loja</option>
