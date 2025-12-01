@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/db';
 import User from '@/models/user';
 
-// GET (Mantém igual)
 export async function GET(req, { params }) {
   await connectDB();
   const { id } = await params;
@@ -15,20 +14,17 @@ export async function GET(req, { params }) {
   }
 }
 
-// PUT (CORRIGIDO: TRADUÇÃO DOS CAMPOS)
 export async function PUT(req, { params }) {
   await connectDB();
   const { id } = await params;
   
   try {
-    const data = await req.json(); // Recebe: { nome, email, perfil }
+    const data = await req.json(); // chega: { nome, email, perfil }
 
-    // Objeto de atualização traduzido
     const updateData = {
         name: data.nome,
         contact_email: data.email,
         level: data.perfil
-        // Nota: Não atualizamos senha/user aqui por segurança, a menos que queira
     };
 
     const updated = await User.findByIdAndUpdate(id, updateData, { new: true });
@@ -38,7 +34,6 @@ export async function PUT(req, { params }) {
   }
 }
 
-// DELETE (Mantém igual)
 export async function DELETE(req, { params }) {
   await connectDB();
   const { id } = await params;

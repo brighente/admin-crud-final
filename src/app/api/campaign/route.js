@@ -17,7 +17,6 @@ export async function POST(req) {
     await connectDB();
     const body = await req.json();
     
-    // Tradução dos campos
     const { descricao, meta, duracao, id_fornecedor } = body;
 
     if (!descricao || !meta || !duracao || !id_fornecedor) {

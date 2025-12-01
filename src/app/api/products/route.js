@@ -5,7 +5,6 @@ import Product from '@/models/product';
 export async function GET() {
   await connectDB();
   try {
-    // Populate busca os dados completos do fornecedor usando o ID salvo
     const products = await Product.find({}).populate('supplier_id'); 
     return NextResponse.json(products);
   } catch (error) {
@@ -18,7 +17,6 @@ export async function POST(req) {
     await connectDB();
     const body = await req.json();
     
-    // Tradução dos campos do formulário para o Model
     const { nome, valor, estoque, categoria, fornecedor, foto } = body;
 
     if (!nome || !valor || !estoque || !fornecedor) {
@@ -33,7 +31,7 @@ export async function POST(req) {
       price: parseFloat(valor),
       stock_quantity: parseInt(estoque),
       category: categoria,
-      supplier_id: fornecedor, // O ID que vem do select
+      supplier_id: fornecedor,
       image: foto,
       status: 'on'
     });

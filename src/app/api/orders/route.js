@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/db';
 import Order from '@/models/order';
-import Product from '@/models/product'; // Importante para validar estoque futuro
+import Product from '@/models/product';
 
 export async function GET() {
   await connectDB();
@@ -10,7 +10,7 @@ export async function GET() {
       .populate('store_id')
       .populate('supplier_id')
       .populate('items.product_id')
-      .sort({ createdAt: -1 }); // Mais recentes primeiro
+      .sort({ createdAt: -1 });
       
     return NextResponse.json(orders);
   } catch (error) {
@@ -24,15 +24,12 @@ export async function POST(req) {
     const body = await req.json();
     const { id_loja, id_fornecedor, itens } = body;
 
-    // Validação Básica
     if (!id_loja || !id_fornecedor || !itens || itens.length === 0) {
       return NextResponse.json({ message: 'Dados incompletos.' }, { status: 400 });
     }
 
-    // Calcular o total no backend (mais seguro)
     let totalGeral = 0;
     
-    // Traduzir itens para o formato do Schema
     const orderItems = itens.map(item => {
       totalGeral += item.total;
       return {

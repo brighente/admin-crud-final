@@ -16,14 +16,12 @@ export async function POST(req) {
   try {
     await connectDB();
 
-    // 1. Recebe dados em português do Front
     const body = await req.json();
     const { 
       nome_fantasia, razao_social, cnpj, email, telefone,
       logradouro, numero, bairro, cidade, estado, cep 
     } = body;
 
-    // Validação Básica
     if (!nome_fantasia || !cnpj || !email) {
       return NextResponse.json(
         { message: 'Campos obrigatórios: Nome Fantasia, CNPJ e E-mail.' }, 
@@ -31,7 +29,6 @@ export async function POST(req) {
       );
     }
 
-    // 2. Verifica duplicidade
     const storeExists = await Store.findOne({ cnpj: cnpj });
     if (storeExists) {
       return NextResponse.json(
@@ -40,7 +37,6 @@ export async function POST(req) {
       );
     }
 
-    // 3. Cria o objeto estruturado
     const newStore = new Store({
       store_name: nome_fantasia,
       corporate_reason: razao_social,

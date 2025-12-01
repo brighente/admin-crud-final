@@ -18,7 +18,6 @@ export async function PUT(req, { params }) {
   try {
     const data = await req.json();
 
-    // TRADUÇÃO
     const updateData = {
         supplier_name: data.nome_fantasia,
         corporate_reason: data.razao_social,

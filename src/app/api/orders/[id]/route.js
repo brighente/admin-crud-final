@@ -16,8 +16,6 @@ export async function PUT(req, { params }) {
   try {
     const data = await req.json();
     
-    // Se vier apenas status, atualiza só status.
-    // Se vierem outros campos, garantimos que usem os nomes certos (mas por enquanto sua tela só edita status)
     const updateData = {
         status: data.status
     };

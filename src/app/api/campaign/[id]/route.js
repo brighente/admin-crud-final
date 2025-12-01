@@ -16,7 +16,6 @@ export async function PUT(req, { params }) {
   try {
     const data = await req.json();
 
-    // TRADUÇÃO
     const updateData = {
         name: data.descricao,
         sales_goal: parseFloat(data.meta),
